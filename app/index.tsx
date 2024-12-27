@@ -16,9 +16,15 @@ export default function Index() {
         // Do nothing if input is empty
       } else {
         try {
-          // Ensure proper handling of % operator
-          const result = eval(input.replace(/÷/g, '/').replace(/×/g, '*').replace(/%/g, '/100'));
-          setInput(result.toString());
+          // Handle leading zeros and operators properly
+          const sanitizedInput = input
+            .replace(/÷/g, '/')
+            .replace(/×/g, '*')
+            .replace(/%/g, '/100')
+            .replace(/\b0+(\d+)/g, '$1'); // Fix for leading zeros
+          
+          const result = Function(`'use strict'; return (${sanitizedInput})`)();
+          setInput(Number.isFinite(result) ? result.toString() : 'Error');
         } catch (e) {
           setInput('Error'); // Handle invalid input cases
         }
