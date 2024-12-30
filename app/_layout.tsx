@@ -1,7 +1,6 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, View } from "react-native";
 import "../global.css";
 
 export default function RootLayout() {
