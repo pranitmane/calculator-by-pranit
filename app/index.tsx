@@ -1,11 +1,12 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Text, View, Pressable, SafeAreaView } from 'react-native';
+import { Text, View, Pressable, SafeAreaView, StatusBar } from 'react-native';
 import { twMerge } from 'tailwind-merge';
 
 export default function Index() {
   const [input, setInput] = useState<string>('');
-
+  const height = StatusBar.currentHeight;
+  const paddingTop = "pt-[" + `${height ? height : 25}` + "px]";
   const handlePress = (value: string) => {
     if (value === 'AC') {
       setInput(''); // Clear input
@@ -22,7 +23,7 @@ export default function Index() {
             .replace(/×/g, '*')
             .replace(/%/g, '/100')
             .replace(/\b0+(\d+)/g, '$1'); // Fix for leading zeros
-          
+
           const result = Function(`'use strict'; return (${sanitizedInput})`)();
           setInput(Number.isFinite(result) ? result.toString() : 'Error');
         } catch (e) {
@@ -38,63 +39,65 @@ export default function Index() {
     <Pressable
       onPress={() => handlePress(value)}
       className={twMerge(
-        'bg-gray-800 rounded-full flex-1 m-2 justify-center items-center h-16 shadow-md shadow-black active:scale-95 active:bg-gray-700',
+        'bg-gray-900 rounded-2xl p-4 flex-1 justify-center items-center active:scale-95 active:bg-gray-900/70 transition-all',
         additionalClasses
       )}
     >
-      <Text className={twMerge('text-3xl font-semibold text-gray-100')}>
+      <Text className={twMerge('text-4xl text-gray-300')}>
         {value}
       </Text>
     </Pressable>
   );
 
   return (
-    <SafeAreaView className="flex-1 gap-6 bg-gray-950 p-6 pt-14 pb-12">
+    <SafeAreaView className={twMerge('flex-1 bg-gray-950', paddingTop)}>
       {/* Display Section */}
-      <View className="flex-1 bg-gray-800 rounded-lg p-4 justify-end items-end shadow-lg shadow-black">
-        <Text className="text-gray-200 text-6xl">{input || '0'}</Text>
+      <View className="flex-1 bg-gray-900 rounded-b-3xl p-4 justify-end items-end">
+        <Text className="text-8xl text-gray-300 ">{input || '0'}</Text>
       </View>
 
       {/* Keypad Section */}
-      <View className="flex-3 mt-6">
+      <View className="flex-3 gap-2 p-4 max-h-[70%]">
         {/* Row 1 */}
-        <View className="flex-row">
-          {renderButton('AC', 'bg-red-800 active:bg-red-700')}
-          {renderButton('%', 'bg-gray-600')}
-          {renderButton('DEL', 'bg-yellow-800 active:bg-yellow-700')}
-          {renderButton('÷', 'bg-gray-600')}
+        <View className="flex-row gap-2">
+          {renderButton('AC', 'bg-red-800 active:bg-red-800/70')}
+          {renderButton('DEL', 'bg-gray-800 active:bg-gray-800/70')}
+          {renderButton('%', 'bg-gray-800 active:bg-gray-800/70')}
+          {renderButton('÷', 'bg-gray-800 active:bg-gray-800/70')}
         </View>
         {/* Row 2 */}
-        <View className="flex-row">
+        <View className="flex-row gap-2">
           {renderButton('7')}
           {renderButton('8')}
           {renderButton('9')}
-          {renderButton('×', 'bg-gray-600')}
+          {renderButton('×', 'bg-gray-800 active:bg-gray-800/70')}
         </View>
         {/* Row 3 */}
-        <View className="flex-row">
+        <View className="flex-row gap-2">
           {renderButton('4')}
           {renderButton('5')}
           {renderButton('6')}
-          {renderButton('-', 'bg-gray-600')}
+          {renderButton('-', 'bg-gray-800 active:bg-gray-800/70')}
         </View>
         {/* Row 4 */}
-        <View className="flex-row">
+        <View className="flex-row gap-2">
           {renderButton('1')}
           {renderButton('2')}
           {renderButton('3')}
-          {renderButton('+', 'bg-gray-600')}
+          {renderButton('+', 'bg-gray-800 active:bg-gray-800/70')}
         </View>
         {/* Row 5 */}
-        <View className="flex-row">
-          {renderButton('0', 'flex-[2]')}
-          {renderButton('.')}
-          {renderButton('=', 'bg-green-800 active:bg-green-700')}
+        <View className="flex-row gap-2 min-h-fit">
+          <View className='flex-1'>
+            {renderButton('0')}
+          </View>
+          <View className='flex-row gap-2 flex-1 relative'>
+            {renderButton('.')}
+            {renderButton('=', 'bg-green-800 active:bg-green-800/70')}
+          </View>
         </View>
-      </View>
-      <View>
-        <Text className='text-center text-gray-400 text-lg font-light'>
-          Calculator by <Link className=' underline text-sky-400' href='https://pranitmane.com'>Pranit</Link>
+        <Text className='text-center text-gray-500 text-lg font-light'>
+          Calculator by <Link className=' underline text-sky-500' href='https://pranitmane.com'>Pranit</Link>
         </Text>
       </View>
     </SafeAreaView>
