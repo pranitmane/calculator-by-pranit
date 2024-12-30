@@ -18,4 +18,4 @@
 3. Run `npm start`  
 
 ## Screenshots
-![Screenshot 1](./assets/screenshot1.png)  
+![Screenshot 1](./assets/screenshot1.jpeg)  
