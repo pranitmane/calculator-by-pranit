@@ -1,12 +1,13 @@
 import { Link } from 'expo-router';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, Pressable, SafeAreaView, StatusBar } from 'react-native';
 import { twMerge } from 'tailwind-merge';
-import { evaluate, number } from 'mathjs';
+import { evaluate } from 'mathjs';
 
 export default function Index() {
   const [expression, setExpression] = useState<string>('0');
   const [result, setResult] = useState<string>('0');
+  const [calculate, setCalculate] = useState<boolean>(false);
 
   const height = StatusBar.currentHeight;
   const paddingTop = "pt-[" + `${height ? height : 25}` + "px]";
@@ -18,26 +19,38 @@ export default function Index() {
   }, [expression]);
 
   const handlePress = (value: string) => {
+    const operators = ['÷', '×', '-', '+', '%'];
     switch (value) {
       case 'AC':
+        setCalculate(false);
         setExpression('0'); // Clear expression
-        setResult('0'); // Clear result
         break;
 
       case 'DEL':
+        setCalculate(false);
         setExpression((prev) => prev.length > 1 ? prev.slice(0, -1) : '0');
         break;
 
       case '=':
-        if (expression.trim()) {
-          setResult(() => {
-            return evaluateExpression(expression);
-          });
+        if (expression.trim() && expression !== '0' && result !== 'Error') {
+          setCalculate(true);
         }
         break;
 
       default:
-        setExpression((prev) => inputValidation(prev, value))
+        if (calculate) {
+          if (operators.includes(value)) {
+            setCalculate(false);
+            setExpression(result + value);
+          }
+          else {
+            setCalculate(false);
+            setExpression('0');
+            setExpression((prev) => inputValidation(prev, value));
+          }
+        } else {
+          setExpression((prev) => inputValidation(prev, value));
+        }
         break;
     }
   };
@@ -61,20 +74,12 @@ export default function Index() {
     <SafeAreaView className={twMerge('flex-1 bg-gray-950', paddingTop)}>
       {/* Display Section */}
       <View className="flex-1 gap-2 bg-gray-900 rounded-b-3xl p-4 justify-end items-end">
-        {
-          expression === '0' ? (
-            <Text className="text-7xl text-gray-300">
-              {formatExpression(expression)}
-            </Text>
-          ) : (
-            <Text className="text-5xl text-gray-500">
-              {formatExpression(expression)}
-            </Text>
-          )
-        }
+        <Text className={twMerge(!calculate ? "text-7xl text-gray-300" : "text-5xl text-gray-500")}>
+          {formatExpression(expression)}
+        </Text>
         {
           expression === '0' ? null : (
-            <Text className="text-7xl text-gray-300">
+            <Text className={twMerge(calculate ? "text-7xl text-gray-300" : "text-5xl text-gray-500", result === 'Error' ? 'text-red-500' : '')}>
               {"= " + formatExpression(result)}
             </Text>
           )
@@ -169,13 +174,13 @@ const evaluateExpression = (expression: string) => {
   }
 };
 
-const inputValidation = (prev: string, value: string): string => {
+const inputValidation = (prev: string, value: string) => {
   const operators = ['÷', '×', '-', '+', '%'];
   const lastChar = prev.slice(-1);
   const lastNumber = prev.split(/[-+×÷%]/).pop();
 
   if (prev === '0' && value !== '-' && value !== '.') {
-    if (operators.includes(value)){ 
+    if (operators.includes(value)) {
       return prev; //prevent starting with operator
     }
     return value;
@@ -183,10 +188,10 @@ const inputValidation = (prev: string, value: string): string => {
 
   if (operators.includes(value) || value === '.') {
     if (operators.includes(lastChar)) {
-      if(lastChar === '%'){ //allow consecutive percentage
+      if (lastChar === '%') { //allow consecutive percentage
         return prev + value;
       }
-      return prev;
+      return prev.slice(0, -1) + value;
     }
 
     if (value === '.' && (lastNumber?.includes('.') || lastChar === '.')) {
