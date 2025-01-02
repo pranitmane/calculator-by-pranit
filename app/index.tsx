@@ -2,7 +2,7 @@ import { Link } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { Text, View, Pressable, SafeAreaView, StatusBar } from 'react-native';
 import { twMerge } from 'tailwind-merge';
-import { evaluate } from 'mathjs';
+import { evaluate, number } from 'mathjs';
 
 export default function Index() {
   const [expression, setExpression] = useState<string>('0');
@@ -13,7 +13,7 @@ export default function Index() {
 
   useEffect(() => {
     setResult(() => {
-      return evaluateExpression(sanitizeexpression(expression));
+      return evaluateExpression(expression);
     })
   }, [expression]);
 
@@ -37,19 +37,7 @@ export default function Index() {
         break;
 
       default:
-        if (['÷', '×', '-', '+', '%', '.'].includes(value)) {
-          if (['÷', '×', '-', '+', '.'].includes(expression.slice(-1))) {
-            return;
-          }
-        }
-        setExpression((prev) => {
-          if (prev === '0' && ((value !== '-') && (value !== '.'))) {
-            return value;
-          }
-          else {
-            return prev + value;
-          }
-        });
+        setExpression((prev) => inputValidation(prev, value))
         break;
     }
   };
@@ -76,18 +64,18 @@ export default function Index() {
         {
           expression === '0' ? (
             <Text className="text-7xl text-gray-300">
-              {formatNumber(expression) || '0'}
+              {formatExpression(expression)}
             </Text>
           ) : (
             <Text className="text-5xl text-gray-500">
-              {formatNumber(expression)}
+              {formatExpression(expression)}
             </Text>
           )
         }
         {
           expression === '0' ? null : (
             <Text className="text-7xl text-gray-300">
-              {"= " + formatNumber(result)}
+              {"= " + formatExpression(result)}
             </Text>
           )
         }
@@ -142,30 +130,71 @@ export default function Index() {
 }
 
 
-const formatNumber = (num: string) => {
-  if (!num.includes('.')) {
-    return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-  const [integerPart, decimalPart] = num.split('.');
-  return integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '.' + decimalPart;
-};
+const formatExpression = (expression: string) => {
+  const addComma = (num: string) => {
+    if (!num.includes('.')) {
+      return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    const [integerPart, decimalPart] = num.split('.');
+    return integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '.' + decimalPart;
+  };
 
-const sanitizeexpression = (expression: string) => {
-  return expression
-    .replace(/÷/g, '/')
-    .replace(/×/g, '*')
-    .replace(/%(\d+)?/g, (match, number) => {
-      return number ? `/100*${number}` : `/100`;
-    })
-    .replace(/\b0+(\d+)/g, '$1') // Fix for leading zeros
-    .replace(/[^0-9%]$/, ''); // Remove trailing operators
+  const parts = expression.split(/([+\-×÷%])/);
+  return parts.map(part => {
+    if (/[\d.]+/.test(part)) {
+      return addComma(part);
+    } else {
+      return part;
+    }
+  }).join('');
 };
 
 const evaluateExpression = (expression: string) => {
+  const expressionParser = (expression: string) => {
+    return expression
+      .replace(/÷/g, '/')
+      .replace(/×/g, '*')
+      .replace(/%(\d+)?/g, (match, number) => {
+        return number ? `/100*${number}` : `/100`;
+      })
+      .replace(/\b0+(\d+)/g, '$1') // Fix for leading zeros
+      .replace(/[^0-9%]$/, ''); // Remove trailing operators
+  };
   try {
-    const result = evaluate(sanitizeexpression(expression));
+    const finalExpression = expressionParser(expression);
+    const result = evaluate(finalExpression);
     return Number.isFinite(result) ? parseFloat(result.toPrecision(9)).toString() : 'Error';
   } catch {
     return 'Error';
   }
+};
+
+const inputValidation = (prev: string, value: string): string => {
+  const operators = ['÷', '×', '-', '+', '%'];
+  const lastChar = prev.slice(-1);
+  const lastNumber = prev.split(/[-+×÷%]/).pop();
+
+  if (prev === '0' && value !== '-' && value !== '.') {
+    if (operators.includes(value)){ 
+      return prev; //prevent starting with operator
+    }
+    return value;
+  }
+
+  if (operators.includes(value) || value === '.') {
+    if (operators.includes(lastChar)) {
+      if(lastChar === '%'){ //allow consecutive percentage
+        return prev + value;
+      }
+      return prev;
+    }
+
+    if (value === '.' && (lastNumber?.includes('.') || lastChar === '.')) {
+      return prev;
+    }
+
+    return prev + value;
+  }
+
+  return prev + value;
 };
