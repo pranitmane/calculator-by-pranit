@@ -56,15 +56,15 @@ export default function Index() {
   };
 
 
-  const renderButton = (value: string, additionalClasses: string = '') => (
+  const renderButton = (value: string, buttonStyle: string = '', textStyle: string = '') => (
     <Pressable
       onPress={() => handlePress(value)}
       className={twMerge(
         'bg-gray-900 rounded-2xl p-4 flex-1 justify-center items-center active:scale-95 active:bg-gray-900/70 transition-all',
-        additionalClasses
+        buttonStyle
       )}
     >
-      <Text className={twMerge('text-4xl text-gray-300')}>
+      <Text className={twMerge('text-4xl text-gray-200/70',textStyle)}>
         {value}
       </Text>
     </Pressable>
@@ -73,21 +73,31 @@ export default function Index() {
   return (
     <SafeAreaView className={twMerge('flex-1 bg-gray-950', paddingTop)}>
       {/* Display Section */}
-      <View className="flex-1 gap-2 bg-gray-900 rounded-b-3xl p-4 justify-end items-end">
-        <Text className={twMerge(!calculate ? "text-7xl text-gray-300" : "text-5xl text-gray-500")}>
+      <View className="flex-1 gap-2 p-4 justify-end items-end">
+        <Text
+          className={twMerge(
+            "transition-all duration-300 ease-in-out",
+            !calculate ? "text-7xl text-gray-200/70" : "text-5xl text-gray-400/70"
+          )}
+        >
           {formatExpression(expression)}
         </Text>
-        {
-          expression === '0' ? null : (
-            <Text className={twMerge(calculate ? "text-7xl text-gray-300" : "text-5xl text-gray-500", result === 'Error' ? 'text-red-500' : '')}>
-              {"= " + formatExpression(result)}
-            </Text>
-          )
-        }
+        {expression !== '0' && (
+          <Text
+            className={twMerge(
+              "transition-all duration-300 ease-in-out",
+              calculate ? "text-7xl text-gray-200/70" : "text-5xl text-gray-400/70",
+              result === 'Error' ? "text-red-500/70" : ""
+            )}
+          >
+            {"= " + formatExpression(result)}
+          </Text>
+        )}
       </View>
 
+
       {/* Keypad Section */}
-      <View className="flex-3 gap-2 p-4 max-h-[70%]">
+      <View className="flex-3 border-t border-gray-800 gap-2 p-4 max-h-[70%]">
         {/* Row 1 */}
         <View className="flex-row gap-2">
           {renderButton('AC', 'bg-red-800 active:bg-red-800/70')}
