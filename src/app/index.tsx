@@ -1,16 +1,13 @@
 import { Link } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { Text, View, Pressable, SafeAreaView, StatusBar } from 'react-native';
+import { Text, View, Pressable, SafeAreaView } from 'react-native';
 import { twMerge } from 'tailwind-merge';
-import { evaluate } from 'mathjs';
+import { evaluateExpression, formatExpression, inputValidation } from '../utils/calculate';
 
 export default function Index() {
   const [expression, setExpression] = useState<string>('0');
   const [result, setResult] = useState<string>('0');
   const [calculate, setCalculate] = useState<boolean>(false);
-
-  const height = StatusBar.currentHeight;
-  const paddingTop = "pt-[" + `${height ? height : 25}` + "px]";
 
   useEffect(() => {
     setResult(() => {
@@ -64,14 +61,14 @@ export default function Index() {
         buttonStyle
       )}
     >
-      <Text className={twMerge('text-4xl text-gray-200/70',textStyle)}>
+      <Text className={twMerge('text-4xl text-gray-200/70', textStyle)}>
         {value}
       </Text>
     </Pressable>
   );
 
   return (
-    <SafeAreaView className={twMerge('flex-1 bg-gray-950', paddingTop)}>
+    <SafeAreaView className={twMerge('flex-1 bg-gray-950 pt-safe')}>
       {/* Display Section */}
       <View className="flex-1 gap-2 p-4 justify-end items-end">
         <Text
@@ -143,73 +140,3 @@ export default function Index() {
     </SafeAreaView>
   );
 }
-
-
-const formatExpression = (expression: string) => {
-  const addComma = (num: string) => {
-    if (!num.includes('.')) {
-      return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-    const [integerPart, decimalPart] = num.split('.');
-    return integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '.' + decimalPart;
-  };
-
-  const parts = expression.split(/([+\-×÷%])/);
-  return parts.map(part => {
-    if (/[\d.]+/.test(part)) {
-      return addComma(part);
-    } else {
-      return part;
-    }
-  }).join('');
-};
-
-const evaluateExpression = (expression: string) => {
-  const expressionParser = (expression: string) => {
-    return expression
-      .replace(/÷/g, '/')
-      .replace(/×/g, '*')
-      .replace(/%(\d+)?/g, (match, number) => {
-        return number ? `/100*${number}` : `/100`;
-      })
-      .replace(/\b0+(\d+)/g, '$1') // Fix for leading zeros
-      .replace(/[^0-9%]$/, ''); // Remove trailing operators
-  };
-  try {
-    const finalExpression = expressionParser(expression);
-    const result = evaluate(finalExpression);
-    return Number.isFinite(result) ? parseFloat(result.toPrecision(9)).toString() : 'Error';
-  } catch {
-    return 'Error';
-  }
-};
-
-const inputValidation = (prev: string, value: string) => {
-  const operators = ['÷', '×', '-', '+', '%'];
-  const lastChar = prev.slice(-1);
-  const lastNumber = prev.split(/[-+×÷%]/).pop();
-
-  if (prev === '0' && value !== '-' && value !== '.') {
-    if (operators.includes(value)) {
-      return prev; //prevent starting with operator
-    }
-    return value;
-  }
-
-  if (operators.includes(value) || value === '.') {
-    if (operators.includes(lastChar)) {
-      if (lastChar === '%') { //allow consecutive percentage
-        return prev + value;
-      }
-      return prev.slice(0, -1) + value;
-    }
-
-    if (value === '.' && (lastNumber?.includes('.') || lastChar === '.')) {
-      return prev;
-    }
-
-    return prev + value;
-  }
-
-  return prev + value;
-};
