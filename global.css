@@ -1,3 +1,74 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    .darkTheme {
+      --bg-primary: #0b0d0c;
+      --text-input-active: #ccffe5;
+      --bg-numbers: #0b0d0c;
+      --bg-numbers-active: #222624;
+      --text-numbers: #a3ccb8;
+      --bg-operators: #29332e;
+      --bg-operators-active: #3d4d45;
+      --text-operators: #b8e5cf;
+      --bg-equal-operator: #408060;
+      --bg-equal-operator-active: #4d9973;
+      --text-equal-operator: #b8e5cf;
+      --bg-clear: #804a40;
+      --bg-clear-active: #99594d;
+      --text-clear: #e5bfb8;
+    }
+    .lightTheme {
+      --bg-primary: #f2fff9;
+      --text-input-active: #141a17;
+      --bg-numbers: #f2fff9;
+      --bg-numbers-active: #dae5e0;
+      --text-numbers: #3d4d45;
+      --bg-operators: #cfe5da;
+      --bg-operators-active: #b8ccc2;
+      --text-operators: #334039;
+      --bg-equal-operator: #66ffb2;
+      --bg-equal-operator-active: #5ce5a1;
+      --text-equal-operator: #1f4d36;
+      --bg-clear: #ff7f66;
+      --bg-clear-active: #e5735c;
+      --text-clear: #4d261f;
+    }
+  }
+  
+
+/* @layer base {
+  .darkColors {
+    --darkGreenBg: #0b0d0c;
+    --darkInputTxtActive: #ccffe5;
+    --darkNumsBg: #0b0d0c;
+    --darkNumsBgActive: #222624;
+    --darkNums: #a3ccb8;
+    --darkOperatorsBg: #29332e;
+    --darkOperatorsBgActive: #3d4d45;
+    --darkOperators: #b8e5cf;
+    --darkEqualOperatorBg: #408060;
+    --darkEqualOperatorBgActive: #4d9973;
+    --darkEqualOperator: #b8e5cf;
+    --darkACBg: #804a40;
+    --darkACBgActive: #99594d;
+    --darkAC: #e5bfb8;
+  }
+  .lightColors {
+    --lightGreenBg: #f2fff9;
+    --lightInputTxtActive: #141a17;
+    --lightNumsBg: #f2fff9;
+    --lightNumsBgActive: #dae5e0;
+    --lightNums: #3d4d45;
+    --lightOperatorsBg: #cfe5da;
+    --lightOperatorsBgActive: #b8ccc2;
+    --lightOperators: #334039;
+    --lightEqualOperatorBg: #66ffb2;
+    --lightEqualOperatorBgActive: #5ce5a1;
+    --lightEqualOperator: #1f4d36;
+    --lightACBg: #ff7f66;
+    --lightACBgActive: #e5735c;
+    --lightAC: #4d261f;
+  }
+} */
