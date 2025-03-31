@@ -4,20 +4,20 @@
 
 @layer base {
     .darkTheme {
-      --bg-primary: #0b0d0c;
-      --text-input-active: #ccffe5;
-      --bg-numbers: #0b0d0c;
+      --bg-primary: #131514;
+      --text-input-active: #DBF0E5;
+      --bg-numbers: #0F100F;
       --bg-numbers-active: #222624;
-      --text-numbers: #a3ccb8;
-      --bg-operators: #29332e;
-      --bg-operators-active: #3d4d45;
-      --text-operators: #b8e5cf;
+      --text-numbers: #C2D6CC;
+      --bg-operators: #1B1D1C;
+      --bg-operators-active: #222624;
+      --text-operators: #C2D6CC;
       --bg-equal-operator: #408060;
       --bg-equal-operator-active: #4d9973;
-      --text-equal-operator: #b8e5cf;
-      --bg-clear: #804a40;
-      --bg-clear-active: #99594d;
-      --text-clear: #e5bfb8;
+      --text-equal-operator: #C2D6CC;
+      --bg-clear: #1B1D1C;
+      --bg-clear-active: #222624;
+      --text-clear: #C2D6CC;
     }
     .lightTheme {
       --bg-primary: #f2fff9;
